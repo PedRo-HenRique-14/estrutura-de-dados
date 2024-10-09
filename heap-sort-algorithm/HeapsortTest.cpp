@@ -110,19 +110,37 @@ void gerar_vetor(int *vetor, int n, int opt) {
     }
 }
 
-/* void printInfo() {
+void printInfo() {
     for(int caso = 0; caso < 3; caso++) {
+        printf("Tempo:\t\t");
         for(int casoExecNum = 0; casoExecNum < 10; casoExecNum++) {
-            
+            printf("%ldms\t", times[caso][casoExecNum]);
         }
+
+        printf("\n");
+        
+        printf("N Trocas\t");
+        for(int casoExecNum = 0; casoExecNum < 10; casoExecNum++) {
+            printf("%ld\t", changes[caso][casoExecNum]);
+        }
+
+        printf("\n");
+
+        printf("N Comparacoes\t");
+        for(int casoExecNum = 0; casoExecNum < 10; casoExecNum++) {
+            printf("%ld\t", comparison[caso][casoExecNum]);
+        }
+
+        printf("\n");
+        printf("\n");
     }
-} */
+}
 
 // Driver's code
 int main() {
 
-    const int n = 10;
-    int arr[n];
+    const int n = 9;
+    int arr[n+1];
 
     for(int caso = 1; caso <= 3; caso++) {
         for(int casoExecNum = 0; casoExecNum < 10; casoExecNum++) {
@@ -140,7 +158,7 @@ int main() {
         }
     }
 
-
+    printInfo();
 
     printf("Sorted array is \n");
     printArray(arr, n);
