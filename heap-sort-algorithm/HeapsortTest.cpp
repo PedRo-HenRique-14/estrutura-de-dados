@@ -1,13 +1,9 @@
-/* 
- * Código extraido de https://www.geeksforgeeks.org/heap-sort/
- */
-
 #include <stdio.h>
 #include <cstdlib> // Para rand() e srand()
 #include <ctime>   // Para time()
 #include <time.h>
 
-long times[3][10];
+double times[3][10];
 long changes[3][10];
 long comparison[3][10];
 
@@ -28,20 +24,20 @@ void heapify(int arr[], int n, int i, long *changes, long *comparison) {
     if (l < n && arr[l] > arr[largest]) {
         largest = l;
     }
-    comparison++;
+    (*comparison)++;
 
     // If right child is larger than largest so far
     if (r < n && arr[r] > arr[largest]) {
         largest = r;
     }
-    comparison++;
+    (*comparison)++;
 
     // If largest is not root
     if (largest != i) {
         int temp = arr[i];
         arr[i] = arr[largest];
         arr[largest] = temp;
-        changes++;
+        (*changes)++;
 
         // Recursively heapify the affected sub-tree
         heapify(arr, n, largest, changes, comparison);
@@ -63,7 +59,7 @@ void heapSort(int arr[], int n, long *changes, long *comparison) {
         int temp = arr[0]; 
         arr[0] = arr[i];
         arr[i] = temp;
-        changes++;
+        (*changes)++;
 
         // Call max heapify on the reduced heap
         heapify(arr, i, 0, changes, comparison);
@@ -99,7 +95,6 @@ void gerar_vetor(int *vetor, int n, int opt) {
                 vetor[i] = i;
             }
 
-            srand(time(0));
             for(int i = 0; i < n; i++) {
                 j = rand() % n;
                 aux = vetor[i];
@@ -110,39 +105,49 @@ void gerar_vetor(int *vetor, int n, int opt) {
     }
 }
 
-/* void printInfo() {
+void printInfo() {
     for(int caso = 0; caso < 3; caso++) {
         for(int casoExecNum = 0; casoExecNum < 10; casoExecNum++) {
-            
+            printf("caso %d, teste %d: tempo: %0.fms, comparacoes: %ld, trocas: %ld\n", 
+                   caso+1, casoExecNum+1, times[caso][casoExecNum], 
+                   comparison[caso][casoExecNum], changes[caso][casoExecNum]);
         }
+        printf("/n");
     }
-} */
+}
 
 // Driver's code
 int main() {
-
-    const int n = 10;
+    struct timespec start, end;
+    const int n = 50000;
     int arr[n];
+    //inicializa a semente fora do loop por que o processamento rápido acaba fazendo com que o
+    //a semente venha sempre do mesmo segundo, o que faz o programa gerar numeros iguais sempre
+    srand(time(0));
 
     for(int caso = 1; caso <= 3; caso++) {
         for(int casoExecNum = 0; casoExecNum < 10; casoExecNum++) {
             // Vamos fingir que estamos entendendo
             // Para garantir, não mexa, por favor :)
-            changes[caso][casoExecNum] = 0;
-            comparison[caso][casoExecNum] = 0;
+            changes[caso - 1][casoExecNum] = 0;
+            comparison[caso - 1][casoExecNum] = 0;
 
             gerar_vetor(arr, n, caso);
-
-            clock_t start = clock();
+            //printArray(arr,n);
+            clock_gettime(CLOCK_MONOTONIC, &start);
             heapSort(arr, n, &changes[caso - 1][casoExecNum], &comparison[caso - 1][casoExecNum]);
-            clock_t end = clock();
-            times[caso - 1][casoExecNum] = ((long)(end-start));
+            clock_gettime(CLOCK_MONOTONIC, &end);
+            long seconds = end.tv_sec - start.tv_sec;
+            long nanoseconds = end.tv_nsec - start.tv_nsec;
+            double elapsed_ms = (seconds * 1000.0) + (nanoseconds / 1000000.0);
+            times[caso - 1][casoExecNum] = elapsed_ms;
+
         }
     }
 
+    printInfo();
 
-
-    printf("Sorted array is \n");
-    printArray(arr, n);
+    //printf("Sorted array is \n");
+    //printArray(arr, n);
     return 0;
 }
